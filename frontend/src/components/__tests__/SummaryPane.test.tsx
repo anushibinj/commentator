@@ -41,7 +41,7 @@ describe('SummaryPane', () => {
     });
   });
 
-  it('does not auto-generate when summary is already cached', async () => {
+  it('does NOT auto-generate on mount when a cached summary already exists (page refresh)', async () => {
     const mockSummarize = vi.spyOn(summarizeApiModule, 'summarizeSession');
 
     act(() => {
@@ -52,11 +52,38 @@ describe('SummaryPane', () => {
 
     render(<SummaryPane />);
 
-    // Wait a bit to ensure no async calls happen
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // Wait long enough that any debounce would have fired
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Should not call API if summary already cached
     expect(mockSummarize).not.toHaveBeenCalled();
+  });
+
+  it('auto-generates when a new snippet is added even if summary is cached', async () => {
+    const mockSummarize = vi.spyOn(summarizeApiModule, 'summarizeSession')
+      .mockResolvedValue({ summary: 'Updated summary' });
+
+    let sessionId: string;
+    act(() => {
+      sessionId = useAppStore.getState().createSession('PROJ-1', 'Test');
+      useAppStore.getState().addSnippet(sessionId, 'TEXT', 'Initial work');
+      useAppStore.getState().updateSessionSummary(sessionId, 'Initial summary');
+    });
+
+    // Render with the cached summary already in place
+    render(<SummaryPane />);
+
+    // Confirm no call yet (cached summary, no new snippet)
+    expect(mockSummarize).not.toHaveBeenCalled();
+
+    // Now add a new snippet — this should trigger regeneration
+    act(() => {
+      useAppStore.getState().addSnippet(sessionId!, 'TEXT', 'More work');
+    });
+
+    // Wait for debounce and API call
+    await waitFor(() => {
+      expect(mockSummarize).toHaveBeenCalled();
+    }, { timeout: 3000 });
   });
 
   it('shows Copy button when summary exists', async () => {
@@ -111,11 +138,14 @@ describe('SummaryPane', () => {
 
     render(<SummaryPane />);
 
+    // Clear the mock to track only the Regenerate button click
+    mockSummarize.mockClear();
+
     fireEvent.click(screen.getByRole('button', { name: 'Regenerate' }));
 
     await waitFor(() => {
       expect(mockSummarize).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it('does not show Copy and Regenerate buttons when no summary', () => {

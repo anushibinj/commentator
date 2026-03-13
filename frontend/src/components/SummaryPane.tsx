@@ -19,36 +19,43 @@ export function SummaryPane() {
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionRefRef = useRef<string | null>(null);
+  const snippetCountRef = useRef<number>(snippets.length);
 
-  // Auto-generate only if: no cached summary, has snippets, and session is new/changed
+  // Auto-generate only when:
+  // 1. No cached summary and snippets exist (first time for a session with no summary)
+  // 2. A new snippet is added (count increases) — regardless of cached summary
+  // Does NOT trigger on mount when a cached summary already exists (e.g. page refresh)
   useEffect(() => {
-    if (currentSessionId !== sessionRefRef.current) {
-      sessionRefRef.current = currentSessionId;
-      // Session switched — clear error but keep cached summary
+    const prevSessionId = sessionRefRef.current;
+    const prevCount = snippetCountRef.current;
+
+    sessionRefRef.current = currentSessionId;
+    snippetCountRef.current = snippets.length;
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const sessionSwitched = currentSessionId !== prevSessionId;
+
+    if (sessionSwitched) {
       setError(null);
-      // If no cached summary and we have snippets, start auto-gen
-      if (!cachedSummary && currentSession && snippets.length > 0) {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => {
-          generateSummary();
-        }, DEBOUNCE_MS);
+      // Only auto-gen if there's no cached summary yet
+      if (!cachedSummary && snippets.length > 0) {
+        debounceRef.current = setTimeout(() => generateSummary(), DEBOUNCE_MS);
       }
       return;
     }
 
-    // Same session, but snippets changed
-    if (!cachedSummary && snippets.length > 0) {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        generateSummary();
-      }, DEBOUNCE_MS);
+    // Same session: only regenerate if a new snippet was added
+    const snippetAdded = snippets.length > prevCount;
+    if (snippetAdded) {
+      debounceRef.current = setTimeout(() => generateSummary(), DEBOUNCE_MS);
     }
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSessionId, snippets.length, cachedSummary]);
+  }, [currentSessionId, snippets.length]);
 
   const generateSummary = async () => {
     if (!currentSession) return;
