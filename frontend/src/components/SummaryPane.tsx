@@ -14,23 +14,27 @@ export function SummaryPane() {
   const currentSession = currentSessionId ? sessions[currentSessionId] : null;
   const snippets = currentSession?.snippets ?? [];
   const cachedSummary = currentSession?.summary ?? null;
+  const lastUpdated = currentSession?.lastUpdated ?? 0;
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionRefRef = useRef<string | null>(null);
   const snippetCountRef = useRef<number>(snippets.length);
+  const lastUpdatedRef = useRef<number>(lastUpdated);
 
   // Auto-generate only when:
   // 1. No cached summary and snippets exist (first time for a session with no summary)
-  // 2. A new snippet is added (count increases) — regardless of cached summary
+  // 2. A snippet is added, edited, or deleted — detected via count change or lastUpdated change
   // Does NOT trigger on mount when a cached summary already exists (e.g. page refresh)
   useEffect(() => {
     const prevSessionId = sessionRefRef.current;
     const prevCount = snippetCountRef.current;
+    const prevLastUpdated = lastUpdatedRef.current;
 
     sessionRefRef.current = currentSessionId;
     snippetCountRef.current = snippets.length;
+    lastUpdatedRef.current = lastUpdated;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -45,9 +49,9 @@ export function SummaryPane() {
       return;
     }
 
-    // Same session: only regenerate if a new snippet was added
-    const snippetAdded = snippets.length > prevCount;
-    if (snippetAdded) {
+    // Same session: regenerate if snippets were added, removed, or edited
+    const snippetsChanged = snippets.length !== prevCount || lastUpdated !== prevLastUpdated;
+    if (snippetsChanged && snippets.length > 0) {
       debounceRef.current = setTimeout(() => generateSummary(), DEBOUNCE_MS);
     }
 
@@ -55,7 +59,7 @@ export function SummaryPane() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSessionId, snippets.length]);
+  }, [currentSessionId, snippets.length, lastUpdated]);
 
   const generateSummary = async () => {
     if (!currentSession) return;

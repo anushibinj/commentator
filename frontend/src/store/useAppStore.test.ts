@@ -258,6 +258,23 @@ describe('useAppStore', () => {
       const session = useAppStore.getState().sessions[sessionId!];
       expect(session.summary).toBe('Generated summary');
     });
+
+    it('does NOT bump lastUpdated when saving a summary', () => {
+      let sessionId: string;
+      let lastUpdatedAfterSnippet: number;
+      act(() => {
+        sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
+        useAppStore.getState().addSnippet(sessionId!, 'TEXT', 'Some work');
+        lastUpdatedAfterSnippet = useAppStore.getState().sessions[sessionId!].lastUpdated;
+      });
+
+      act(() => {
+        useAppStore.getState().updateSessionSummary(sessionId!, 'Generated summary');
+      });
+
+      const session = useAppStore.getState().sessions[sessionId!];
+      expect(session.lastUpdated).toBe(lastUpdatedAfterSnippet!);
+    });
   });
 
   describe('getCurrentSession', () => {

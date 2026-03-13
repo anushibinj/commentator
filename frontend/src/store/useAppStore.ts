@@ -171,7 +171,9 @@ export const useAppStore = create<AppStore>()(
               [sessionId]: {
                 ...session,
                 summary,
-                lastUpdated: Date.now(),
+                // Do NOT bump lastUpdated here — saving a generated summary is not a
+                // user content change. Bumping it would re-trigger the auto-generate
+                // effect and cause an infinite regeneration loop.
               },
             },
           };

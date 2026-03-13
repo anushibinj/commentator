@@ -148,6 +148,57 @@ describe('SummaryPane', () => {
     }, { timeout: 3000 });
   });
 
+  it('auto-generates when a snippet is deleted', async () => {
+    const mockSummarize = vi.spyOn(summarizeApiModule, 'summarizeSession')
+      .mockResolvedValue({ summary: 'Updated after delete' });
+
+    let sessionId: string;
+    let snippetId: string;
+    act(() => {
+      sessionId = useAppStore.getState().createSession('PROJ-1', 'Test');
+      useAppStore.getState().addSnippet(sessionId, 'TEXT', 'First note');
+      useAppStore.getState().addSnippet(sessionId, 'TEXT', 'Second note');
+      snippetId = Object.values(useAppStore.getState().sessions[sessionId].snippets)[1].id;
+      useAppStore.getState().updateSessionSummary(sessionId, 'Initial summary');
+    });
+
+    render(<SummaryPane />);
+    expect(mockSummarize).not.toHaveBeenCalled();
+
+    act(() => {
+      useAppStore.getState().deleteSnippet(sessionId!, snippetId!);
+    });
+
+    await waitFor(() => {
+      expect(mockSummarize).toHaveBeenCalled();
+    }, { timeout: 3000 });
+  });
+
+  it('auto-generates when a snippet is edited', async () => {
+    const mockSummarize = vi.spyOn(summarizeApiModule, 'summarizeSession')
+      .mockResolvedValue({ summary: 'Updated after edit' });
+
+    let sessionId: string;
+    let snippetId: string;
+    act(() => {
+      sessionId = useAppStore.getState().createSession('PROJ-1', 'Test');
+      useAppStore.getState().addSnippet(sessionId, 'TEXT', 'Original note');
+      snippetId = Object.values(useAppStore.getState().sessions[sessionId].snippets)[0].id;
+      useAppStore.getState().updateSessionSummary(sessionId, 'Initial summary');
+    });
+
+    render(<SummaryPane />);
+    expect(mockSummarize).not.toHaveBeenCalled();
+
+    act(() => {
+      useAppStore.getState().updateSnippet(sessionId!, snippetId!, 'Edited note');
+    });
+
+    await waitFor(() => {
+      expect(mockSummarize).toHaveBeenCalled();
+    }, { timeout: 3000 });
+  });
+
   it('does not show Copy and Regenerate buttons when no summary', () => {
     act(() => {
       useAppStore.getState().createSession('PROJ-1', 'Test');
