@@ -32,7 +32,9 @@ public class SummaryService {
             "Do not use bullet points. Write in past tense. Keep it concise and factual. " +
             "Do not use formal or academic words like 'pertinent', 'endeavoured', 'facilitate', 'utilize', " +
             "'leverage', 'synthesize', 'cohesive', or 'aforementioned'. " +
-            "Just say what happened, what broke, what was fixed, and what the outcome was.";
+            "IMPORTANT: Do not infer, assume, or fabricate outcomes. " +
+            "If the notes say something is in progress or being investigated, say exactly that — do not imply it was resolved or completed. " +
+            "Only report what is explicitly stated. If the outcome is unknown, leave it unknown.";
 
     private final ChatClient chatClient;
 
