@@ -25,8 +25,13 @@ describe('TopBar', () => {
     expect(screen.getByText('Auth Feature')).toBeInTheDocument();
   });
 
-  it('renders the hint text', () => {
+  it('displays session ticket ID and title separated by em dash', () => {
+    act(() => {
+      useAppStore.getState().createSession('PROJ-99', 'My Task');
+    });
     render(<TopBar />);
-    expect(screen.getByText(/Paste.*Ctrl\+V.*or attach/i)).toBeInTheDocument();
+    expect(screen.getByText('PROJ-99')).toBeInTheDocument();
+    expect(screen.getByText('My Task')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 });
