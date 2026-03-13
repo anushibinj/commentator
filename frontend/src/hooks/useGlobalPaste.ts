@@ -9,6 +9,17 @@ export function useGlobalPaste(sessionId: string | null) {
     if (!sessionId) return;
 
     const handlePaste = async (e: ClipboardEvent) => {
+      // If the user is pasting into a text input or textarea, let the browser
+      // handle it natively — do not intercept and create a snippet.
+      const target = e.target as HTMLElement;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
       const items = e.clipboardData?.items;
       if (!items) return;
 
