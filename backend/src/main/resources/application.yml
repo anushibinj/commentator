@@ -14,5 +14,5 @@ server:
 
 logging:
   level:
-    com.commentator: INFO
+    com.anushibnj.commentator: INFO
     org.springframework.ai: INFO

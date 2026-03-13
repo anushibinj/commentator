@@ -11,8 +11,8 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.commentator</groupId>
-    <artifactId>commentator-backend</artifactId>
+    <groupId>com.anushibnj</groupId>
+    <artifactId>commentator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>commentator-backend</name>
     <description>Stateless Spring Boot proxy for Commentator LLM summarization</description>
