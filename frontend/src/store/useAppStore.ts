@@ -30,6 +30,7 @@ interface AppStore extends AppState {
   createSession: (ticketId: string, title: string) => string;
   selectSession: (sessionId: string) => void;
   deleteSession: (sessionId: string) => void;
+  updateSession: (sessionId: string, ticketId?: string, title?: string) => void;
   // Snippet actions
   addSnippet: (sessionId: string, type: SnippetType, content: string) => void;
   updateSnippet: (sessionId: string, snippetId: string, content: string) => void;
@@ -74,6 +75,24 @@ export const useAppStore = create<AppStore>()(
               ? (Object.keys(remaining)[0] ?? null)
               : state.currentSessionId;
           return { sessions: remaining, currentSessionId };
+        });
+      },
+
+      updateSession: (sessionId: string, ticketId?: string, title?: string): void => {
+        set((state) => {
+          const session = state.sessions[sessionId];
+          if (!session) return state;
+          return {
+            sessions: {
+              ...state.sessions,
+              [sessionId]: {
+                ...session,
+                ticketId: ticketId ?? session.ticketId,
+                title: title ?? session.title,
+                lastUpdated: Date.now(),
+              },
+            },
+          };
         });
       },
 
