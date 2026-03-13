@@ -12,10 +12,10 @@ describe('SummaryModal', () => {
     expect(screen.getByText('My work log summary.')).toBeInTheDocument();
   });
 
-  it('renders the title', () => {
-    render(<SummaryModal summary="Test" onClose={vi.fn()} />);
-    expect(screen.getByText('Jira Work Log Summary')).toBeInTheDocument();
-  });
+   it('renders the title', () => {
+     render(<SummaryModal summary="Test" onClose={vi.fn()} />);
+     expect(screen.getByText('Work Log Summary')).toBeInTheDocument();
+   });
 
   it('calls onClose when close button is clicked', () => {
     const onClose = vi.fn();

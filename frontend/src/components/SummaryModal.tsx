@@ -25,10 +25,10 @@ export function SummaryModal({ summary, onClose }: SummaryModalProps) {
       aria-label="Summary"
     >
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-            Jira Work Log Summary
-          </h2>
+         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+           <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+             Work Log Summary
+           </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none"

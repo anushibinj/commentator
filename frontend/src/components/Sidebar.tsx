@@ -34,10 +34,10 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 flex-shrink-0 bg-gray-900 text-white flex flex-col h-screen">
-      <div className="p-4 border-b border-gray-700">
-        <h1 className="text-lg font-bold text-purple-400">Commentator</h1>
-        <p className="text-xs text-gray-400 mt-1">Dev Log &amp; Jira Summarizer</p>
-      </div>
+       <div className="p-4 border-b border-gray-700">
+         <h1 className="text-lg font-bold text-purple-400">Commentator</h1>
+         <p className="text-xs text-gray-400 mt-1">Developer Work Log Summarizer</p>
+       </div>
 
       <div className="p-3 border-b border-gray-700">
         {isCreating ? (

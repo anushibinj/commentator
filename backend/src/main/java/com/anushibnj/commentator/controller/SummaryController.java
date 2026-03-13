@@ -28,7 +28,7 @@ public class SummaryController {
 
     /**
      * POST /api/summarize
-     * Accepts a SummarizeRequest and returns a generated Jira work log summary.
+     * Accepts a SummarizeRequest and returns a generated work log summary.
      *
      * @param request the incoming summarize request
      * @return 200 OK with the generated summary

@@ -27,7 +27,7 @@ public class SummaryService {
     private static final Logger log = LoggerFactory.getLogger(SummaryService.class);
 
     private static final String SYSTEM_PROMPT =
-            "You are writing a Jira work log entry based on a developer's notes from a work session. " +
+            "You are writing a work log entry based on a developer's notes from a work session. " +
             "Summarise what was done in plain, clear sentences — the kind a developer would actually write. " +
             "Do not use bullet points. Write in past tense. Keep it concise and factual. " +
             "Do not use formal or academic words like 'pertinent', 'endeavoured', 'facilitate', 'utilize', " +

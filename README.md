@@ -1,6 +1,6 @@
 # Commentator
 
-A web-based internal developer utility that acts as a chronological, append-only scratchpad for daily work sessions. Paste text, code snippets, and screenshots into session-specific buckets, then generate a cohesive Jira work log narrative at the click of a button — powered by a multimodal LLM.
+A web-based internal developer utility that acts as a chronological, append-only scratchpad for daily work sessions. Paste text, code snippets, and screenshots into session-specific buckets, then generate a polished work log narrative suitable for any ticketing system — powered by a multimodal LLM.
 
 All session data lives entirely in your browser (IndexedDB). The backend is stateless and acts only as a prompt-assembly and LLM proxy layer.
 
@@ -89,14 +89,14 @@ mvn spring-boot:run
 
 ## Usage
 
-1. **Create a session** — click "New Session" in the sidebar, enter a Jira ticket ID (e.g. `PROJ-1234`) and a title.
+1. **Create a session** — click "New Session" in the sidebar, enter a ticket ID (e.g. `PROJ-1234`) and a title.
 2. **Add content** — paste anything into the app:
    - Plain text or notes → stored as **TEXT**
    - Code or stack traces → auto-detected and stored as **CODE**
    - Screenshots → compressed to max 1024px / JPEG 0.75 and stored as **IMAGE**
    - Or type directly into the input panel at the bottom.
-3. **Generate summary** — click "Generate Summary" in the top bar. The app sends all snippets to the backend, which assembles a multimodal prompt and returns a single narrative paragraph suitable for a Jira work log.
-4. **Copy to clipboard** — copy the generated summary directly from the modal.
+3. **Generate summary** — the app automatically generates a summary whenever you add content. The app sends all snippets to the backend, which assembles a multimodal prompt and returns a single narrative paragraph suitable for your ticketing system.
+4. **Copy to clipboard** — copy the generated summary directly from the summary pane.
 
 ---
 
