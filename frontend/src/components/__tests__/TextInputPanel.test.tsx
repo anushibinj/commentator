@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react';
 import { TextInputPanel } from '../../components/TextInputPanel';
 import { useAppStore } from '../../store/useAppStore';
@@ -11,10 +11,15 @@ beforeEach(() => {
 });
 
 describe('TextInputPanel', () => {
-  it('renders the textarea and type selector', () => {
+  it('renders the textarea and attach button', () => {
     render(<TextInputPanel sessionId="test-session" />);
     expect(screen.getByPlaceholderText('Type a note or paste text here...')).toBeInTheDocument();
-    expect(screen.getByLabelText('Snippet type')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Attach file' })).toBeInTheDocument();
+  });
+
+  it('does not render a type selector', () => {
+    render(<TextInputPanel sessionId="test-session" />);
+    expect(screen.queryByLabelText('Snippet type')).not.toBeInTheDocument();
   });
 
   it('disables the add button when textarea is empty', () => {
@@ -48,23 +53,6 @@ describe('TextInputPanel', () => {
     expect(snippets[0].type).toBe('TEXT');
   });
 
-  it('adds a CODE snippet when CODE type is selected', () => {
-    act(() => {
-      useAppStore.getState().createSession('PROJ-1', 'Test');
-    });
-    const sessionId = useAppStore.getState().currentSessionId!;
-    render(<TextInputPanel sessionId={sessionId} />);
-
-    fireEvent.change(screen.getByLabelText('Snippet type'), { target: { value: 'CODE' } });
-    fireEvent.change(screen.getByPlaceholderText('Type a note or paste text here...'), {
-      target: { value: 'const x = 1;' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
-
-    const snippets = useAppStore.getState().sessions[sessionId].snippets;
-    expect(snippets[0].type).toBe('CODE');
-  });
-
   it('clears textarea after submission', () => {
     act(() => {
       useAppStore.getState().createSession('PROJ-1', 'Test');
@@ -88,5 +76,24 @@ describe('TextInputPanel', () => {
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
     const snippets = useAppStore.getState().sessions[sessionId].snippets;
     expect(snippets).toHaveLength(1);
+  });
+
+  it('adds a TEXT snippet when a text file is attached', async () => {
+    act(() => {
+      useAppStore.getState().createSession('PROJ-1', 'Test');
+    });
+    const sessionId = useAppStore.getState().currentSessionId!;
+    render(<TextInputPanel sessionId={sessionId} />);
+
+    const fileInput = screen.getByLabelText('File attachment input');
+    const file = new File(['log line 1\nlog line 2'], 'app.log', { type: 'text/plain' });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      const snippets = useAppStore.getState().sessions[sessionId].snippets;
+      expect(snippets).toHaveLength(1);
+      expect(snippets[0].type).toBe('TEXT');
+      expect(snippets[0].content).toContain('log line 1');
+    });
   });
 });

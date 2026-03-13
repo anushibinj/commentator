@@ -5,6 +5,7 @@ export function Timeline() {
   const currentSessionId = useAppStore((s) => s.currentSessionId);
   const sessions = useAppStore((s) => s.sessions);
   const deleteSnippet = useAppStore((s) => s.deleteSnippet);
+  const updateSnippet = useAppStore((s) => s.updateSnippet);
 
   if (!currentSessionId) {
     return (
@@ -23,6 +24,10 @@ export function Timeline() {
 
   const handleDelete = (snippetId: string) => {
     deleteSnippet(currentSessionId, snippetId);
+  };
+
+  const handleUpdate = (snippetId: string, content: string) => {
+    updateSnippet(currentSessionId, snippetId, content);
   };
 
   const sortedSnippets = [...session.snippets].sort((a, b) => a.timestamp - b.timestamp);
@@ -48,13 +53,18 @@ export function Timeline() {
             <div className="text-4xl mb-3">📎</div>
             <p className="text-base font-medium">Nothing here yet</p>
             <p className="text-sm mt-1">
-              Paste text or images anywhere on this page to add snippets
+              Paste text or images, or use the input panel below
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {sortedSnippets.map((snippet) => (
-              <SnippetCard key={snippet.id} snippet={snippet} onDelete={handleDelete} />
+              <SnippetCard
+                key={snippet.id}
+                snippet={snippet}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
             ))}
           </div>
         )}

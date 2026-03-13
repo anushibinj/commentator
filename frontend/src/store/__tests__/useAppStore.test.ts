@@ -105,6 +105,27 @@ describe('useAppStore - snippet management', () => {
     });
     expect(useAppStore.getState().sessions).toEqual({});
   });
+
+  it('updates the content of an existing snippet', () => {
+    let sessionId: string;
+    act(() => {
+      sessionId = useAppStore.getState().createSession('PROJ-6', 'Update Test');
+      useAppStore.getState().addSnippet(sessionId, 'TEXT', 'original content');
+    });
+    const snippetId = useAppStore.getState().sessions[sessionId!].snippets[0].id;
+    act(() => {
+      useAppStore.getState().updateSnippet(sessionId!, snippetId, 'updated content');
+    });
+    const snippets = useAppStore.getState().sessions[sessionId!].snippets;
+    expect(snippets[0].content).toBe('updated content');
+  });
+
+  it('does nothing when updating snippet in non-existent session', () => {
+    act(() => {
+      useAppStore.getState().updateSnippet('no-session', 'no-snippet', 'content');
+    });
+    expect(useAppStore.getState().sessions).toEqual({});
+  });
 });
 
 describe('useAppStore - getCurrentSession', () => {

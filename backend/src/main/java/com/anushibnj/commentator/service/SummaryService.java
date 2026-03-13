@@ -27,10 +27,12 @@ public class SummaryService {
     private static final Logger log = LoggerFactory.getLogger(SummaryService.class);
 
     private static final String SYSTEM_PROMPT =
-            "You are a senior software engineer writing a Jira work log. " +
-            "Synthesize the provided chronological notes, errors, and images into a single, " +
-            "cohesive narrative paragraph. Do not use bullet points. Use transitional phrases. " +
-            "Maintain a professional, direct tone.";
+            "You are writing a Jira work log entry based on a developer's notes from a work session. " +
+            "Summarise what was done in plain, clear sentences — the kind a developer would actually write. " +
+            "Do not use bullet points. Write in past tense. Keep it concise and factual. " +
+            "Do not use formal or academic words like 'pertinent', 'endeavoured', 'facilitate', 'utilize', " +
+            "'leverage', 'synthesize', 'cohesive', or 'aforementioned'. " +
+            "Just say what happened, what broke, what was fixed, and what the outcome was.";
 
     private final ChatClient chatClient;
 
