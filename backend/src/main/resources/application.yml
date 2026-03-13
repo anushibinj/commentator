@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: commentator-backend
+  ai:
+    openai:
+      base-url: ${OPENAI_BASE_URL:http://localhost:11434/v1}
+      api-key: ${OPENAI_API_KEY:ollama}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:llava}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.commentator: INFO
+    org.springframework.ai: INFO
