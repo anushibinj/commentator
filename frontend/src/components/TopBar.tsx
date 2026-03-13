@@ -20,9 +20,6 @@ export function TopBar() {
       ) : (
         <span className="text-sm text-gray-400">No session active</span>
       )}
-      <p className="text-xs text-gray-400 mt-0.5 ml-4">
-        Paste (Ctrl+V) or attach images and files anywhere
-      </p>
     </header>
   );
 }
