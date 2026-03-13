@@ -103,7 +103,8 @@ class SummaryServiceTest {
         assertThat(capturedPrompt.getInstructions().get(0))
                 .isInstanceOf(SystemMessage.class);
         assertThat(capturedPrompt.getInstructions().get(0).getText())
-                .contains("senior software engineer");
+                .contains("Jira work log")
+                .contains("plain, clear sentences");
 
         // Second message should contain the ticket ID and text
         assertThat(capturedPrompt.getInstructions().get(1))

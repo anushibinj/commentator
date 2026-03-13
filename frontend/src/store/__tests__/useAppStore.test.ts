@@ -20,6 +20,7 @@ describe('useAppStore - session management', () => {
     expect(state.sessions[id!]).toBeDefined();
     expect(state.sessions[id!].ticketId).toBe('PROJ-1');
     expect(state.sessions[id!].title).toBe('Test Session');
+    expect(state.sessions[id!].summary).toBeNull();
     expect(state.currentSessionId).toBe(id!);
   });
 
@@ -123,6 +124,27 @@ describe('useAppStore - snippet management', () => {
   it('does nothing when updating snippet in non-existent session', () => {
     act(() => {
       useAppStore.getState().updateSnippet('no-session', 'no-snippet', 'content');
+    });
+    expect(useAppStore.getState().sessions).toEqual({});
+  });
+});
+
+describe('useAppStore - summary management', () => {
+  it('updates the summary for a session', () => {
+    let sessionId: string;
+    act(() => {
+      sessionId = useAppStore.getState().createSession('PROJ-7', 'Summary Test');
+    });
+    act(() => {
+      useAppStore.getState().updateSessionSummary(sessionId!, 'This is the generated summary.');
+    });
+    const session = useAppStore.getState().sessions[sessionId!];
+    expect(session.summary).toBe('This is the generated summary.');
+  });
+
+  it('does nothing when updating summary in non-existent session', () => {
+    act(() => {
+      useAppStore.getState().updateSessionSummary('no-session', 'summary');
     });
     expect(useAppStore.getState().sessions).toEqual({});
   });

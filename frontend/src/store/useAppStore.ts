@@ -34,6 +34,8 @@ interface AppStore extends AppState {
   addSnippet: (sessionId: string, type: SnippetType, content: string) => void;
   updateSnippet: (sessionId: string, snippetId: string, content: string) => void;
   deleteSnippet: (sessionId: string, snippetId: string) => void;
+  // Summary actions
+  updateSessionSummary: (sessionId: string, summary: string) => void;
   // Current session helpers
   getCurrentSession: () => TicketSession | null;
 }
@@ -50,6 +52,7 @@ export const useAppStore = create<AppStore>()(
           ticketId,
           title,
           snippets: [],
+          summary: null,
           lastUpdated: Date.now(),
         };
         set((state) => ({
@@ -137,6 +140,23 @@ export const useAppStore = create<AppStore>()(
         const { sessions, currentSessionId } = get();
         if (!currentSessionId) return null;
         return sessions[currentSessionId] ?? null;
+      },
+
+      updateSessionSummary: (sessionId: string, summary: string): void => {
+        set((state) => {
+          const session = state.sessions[sessionId];
+          if (!session) return state;
+          return {
+            sessions: {
+              ...state.sessions,
+              [sessionId]: {
+                ...session,
+                summary,
+                lastUpdated: Date.now(),
+              },
+            },
+          };
+        });
       },
     }),
     {

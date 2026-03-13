@@ -11,6 +11,7 @@ export interface TicketSession {
   ticketId: string; // e.g., "PROJ-1234"
   title: string; // User-defined title
   snippets: Snippet[];
+  summary: string | null; // Cached generated summary; null if not yet generated
   lastUpdated: number; // Epoch ms
 }
 
