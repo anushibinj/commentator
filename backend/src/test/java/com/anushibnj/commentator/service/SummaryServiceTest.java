@@ -104,8 +104,11 @@ class SummaryServiceTest {
                  .isInstanceOf(SystemMessage.class);
          assertThat(capturedPrompt.getInstructions().get(0).getText())
                  .contains("work log")
+                 .contains("first person")
                  .contains("plain, clear sentences")
-                 .contains("Do not infer");
+                 .contains("Do not infer")
+                 .contains("I reported")
+                 .contains("evolve over time");
 
         // Second message should contain the ticket ID and text
         assertThat(capturedPrompt.getInstructions().get(1))

@@ -27,9 +27,16 @@ public class SummaryService {
     private static final Logger log = LoggerFactory.getLogger(SummaryService.class);
 
     private static final String SYSTEM_PROMPT =
-            "You are writing a work log entry based on a developer's notes from a work session. " +
-            "Summarise what was done in plain, clear sentences — the kind a developer would actually write. " +
+            "You are writing a work log entry in the first person, as if the developer wrote it themselves. " +
+            "Summarise what was done in plain, clear sentences — the kind a developer would actually write in their own words. " +
             "Do not use bullet points. Write in past tense. Keep it concise and factual. " +
+            "Do NOT use third-person narrator phrases like 'the developer noted', 'I reported', 'I mentioned', 'I indicated', 'I stated'. " +
+            "Just say what happened directly: 'Investigated the issue', 'Fixed the login bug', 'Did not complete the ticket — will spill to next sprint'. " +
+            "Pay attention to how notes evolve over time. If an earlier note says something was not possible or unlikely, " +
+            "and a later note contradicts it (e.g. it was done after all), connect them naturally — " +
+            "for example: 'Did not think I would finish in time, but managed to fix all issues.' or " +
+            "'Initially thought this would spill to next sprint, but ended up completing it.' " +
+            "Do not list contradicting notes as separate flat sentences — weave them into a single coherent arc. " +
             "Do not use formal or academic words like 'pertinent', 'endeavoured', 'facilitate', 'utilize', " +
             "'leverage', 'synthesize', 'cohesive', or 'aforementioned'. " +
             "IMPORTANT: Do not infer, assume, or fabricate outcomes. " +
