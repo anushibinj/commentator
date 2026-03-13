@@ -1,7 +1,9 @@
 package com.anushibnj.commentator.service;
 
-import com.anushibnj.commentator.model.SummarizeRequest;
-import com.anushibnj.commentator.model.SummarizeResponse;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -13,9 +15,8 @@ import org.springframework.ai.model.Media;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import com.anushibnj.commentator.model.SummarizeRequest;
+import com.anushibnj.commentator.model.SummarizeResponse;
 
 /**
  * Stateless service that assembles a multimodal prompt from the incoming request
@@ -29,7 +30,8 @@ public class SummaryService {
     private static final String SYSTEM_PROMPT =
             "You are writing a work log entry in the first person, as if the developer wrote it themselves. " +
             "Summarise what was done in plain, clear sentences — the kind a developer would actually write in their own words. " +
-            "Do not use bullet points. Write in past tense. Keep it concise and factual. " +
+//            "Do not use bullet points. " +
+            "Write in past tense. Keep it concise and factual. " +
             "Do NOT use third-person narrator phrases like 'the developer noted', 'I reported', 'I mentioned', 'I indicated', 'I stated'. " +
             "Just say what happened directly: 'Investigated the issue', 'Fixed the login bug', 'Did not complete the ticket — will spill to next sprint'. " +
             "Pay attention to how notes evolve over time. If an earlier note says something was not possible or unlikely, " +
@@ -39,6 +41,8 @@ public class SummaryService {
             "Do not list contradicting notes as separate flat sentences — weave them into a single coherent arc. " +
             "Do not use formal or academic words like 'pertinent', 'endeavoured', 'facilitate', 'utilize', " +
             "'leverage', 'synthesize', 'cohesive', or 'aforementioned'. " +
+            "IMPORTANT: Preserve exact technical details, configuration properties, endpoints, and code snippets verbatim. " +
+            "If the notes specify the exact keys or values used for a fix (e.g., 'completions-path: /chat/completions' or 'model: gpt-4o-2024-11-20'), include those exact strings in your summary rather than generalizing them. " +
             "IMPORTANT: Do not infer, assume, or fabricate outcomes. " +
             "If the notes say something is in progress or being investigated, say exactly that — do not imply it was resolved or completed. " +
             "Only report what is explicitly stated. If the outcome is unknown, leave it unknown.";
