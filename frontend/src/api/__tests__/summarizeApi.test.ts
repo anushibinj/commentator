@@ -14,7 +14,7 @@ describe('summarizeApi', () => {
 
   it('returns parsed JSON on success', async () => {
     const mockSummary = { summary: 'Today I worked on the auth flow.' };
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockSummary),
     } as unknown as Response);
@@ -32,7 +32,7 @@ describe('summarizeApi', () => {
   });
 
   it('throws an error on non-ok response', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
       text: () => Promise.resolve('Internal Server Error'),
@@ -44,7 +44,7 @@ describe('summarizeApi', () => {
   });
 
   it('throws when fetch rejects', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
     await expect(summarizeSession(mockRequest)).rejects.toThrow('Network error');
   });
 });

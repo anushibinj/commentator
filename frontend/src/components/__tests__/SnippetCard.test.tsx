@@ -25,12 +25,12 @@ const imageSnippet: Snippet = {
 };
 
 describe('SnippetCard', () => {
-  let onDelete: ReturnType<typeof vi.fn>;
-  let onUpdate: ReturnType<typeof vi.fn>;
+  let onDelete = vi.fn<(id: string) => void>();
+  let onUpdate = vi.fn<(id: string, content: string) => void>();
 
   beforeEach(() => {
-    onDelete = vi.fn();
-    onUpdate = vi.fn();
+    onDelete = vi.fn<(id: string) => void>();
+    onUpdate = vi.fn<(id: string, content: string) => void>();
   });
 
   it('renders a TEXT snippet', () => {

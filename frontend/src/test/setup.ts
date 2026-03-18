@@ -13,8 +13,8 @@ vi.mock('localforage', () => ({
 }));
 
 // Mock URL.createObjectURL and revokeObjectURL
-global.URL.createObjectURL = vi.fn(() => 'blob:mock');
-global.URL.revokeObjectURL = vi.fn();
+globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock');
+globalThis.URL.revokeObjectURL = vi.fn();
 
 // Suppress console.error in tests unless explicitly needed
 const originalError = console.error;

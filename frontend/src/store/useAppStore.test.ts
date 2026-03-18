@@ -11,7 +11,7 @@ beforeEach(() => {
 describe('useAppStore', () => {
   describe('createSession', () => {
     it('creates a new session with the given ticket ID and title', () => {
-      let sessionId: string;
+      let sessionId = '';
       act(() => {
         sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
       });
@@ -71,8 +71,8 @@ describe('useAppStore', () => {
     });
 
     it('updates lastUpdated timestamp when session is updated', () => {
-      let sessionId: string;
-      let originalTimestamp: number;
+      let sessionId = '';
+      let originalTimestamp = 0;
       act(() => {
         sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
         originalTimestamp = useAppStore.getState().sessions[sessionId!].lastUpdated;
@@ -203,9 +203,8 @@ describe('useAppStore', () => {
 
   describe('selectSession', () => {
     it('sets the current session ID', () => {
-      let sessionId: string;
       act(() => {
-        sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
+        useAppStore.getState().createSession('PROJ-1', 'My Task');
         useAppStore.getState().selectSession('other');
       });
 
@@ -230,7 +229,7 @@ describe('useAppStore', () => {
     });
 
     it('clears current session ID if deleted session was active', () => {
-      let sessionId: string;
+      let sessionId = '';
       act(() => {
         sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
       });
@@ -279,9 +278,8 @@ describe('useAppStore', () => {
 
   describe('getCurrentSession', () => {
     it('returns the current session', () => {
-      let sessionId: string;
       act(() => {
-        sessionId = useAppStore.getState().createSession('PROJ-1', 'My Task');
+        useAppStore.getState().createSession('PROJ-1', 'My Task');
       });
 
       const session = useAppStore.getState().getCurrentSession();

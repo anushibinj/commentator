@@ -11,7 +11,7 @@ beforeEach(() => {
 
 describe('useAppStore - session management', () => {
   it('creates a session and sets it as current', () => {
-    let id: string;
+    let id = '';
     act(() => {
       id = useAppStore.getState().createSession('PROJ-1', 'Test Session');
     });
@@ -25,7 +25,7 @@ describe('useAppStore - session management', () => {
   });
 
   it('selects a session', () => {
-    let id: string;
+    let id = '';
     act(() => {
       id = useAppStore.getState().createSession('PROJ-2', 'Another');
       useAppStore.getState().selectSession(id);
@@ -34,7 +34,7 @@ describe('useAppStore - session management', () => {
   });
 
   it('deletes a session and falls back to another', () => {
-    let id1: string, id2: string;
+    let id1 = '', id2 = '';
     act(() => {
       id1 = useAppStore.getState().createSession('PROJ-1', 'First');
       id2 = useAppStore.getState().createSession('PROJ-2', 'Second');
@@ -50,7 +50,7 @@ describe('useAppStore - session management', () => {
   });
 
   it('deletes a non-current session without changing currentSessionId', () => {
-    let id1: string, id2: string;
+    let id1 = '', id2 = '';
     act(() => {
       id1 = useAppStore.getState().createSession('PROJ-1', 'First');
       id2 = useAppStore.getState().createSession('PROJ-2', 'Second');
@@ -156,9 +156,8 @@ describe('useAppStore - getCurrentSession', () => {
   });
 
   it('returns the current session when one is selected', () => {
-    let id: string;
     act(() => {
-      id = useAppStore.getState().createSession('PROJ-5', 'Current');
+      useAppStore.getState().createSession('PROJ-5', 'Current');
     });
     const session = useAppStore.getState().getCurrentSession();
     expect(session?.ticketId).toBe('PROJ-5');

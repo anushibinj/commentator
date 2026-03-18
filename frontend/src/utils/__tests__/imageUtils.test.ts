@@ -57,11 +57,11 @@ describe('compressImageToBase64', () => {
   let OriginalImage: typeof Image;
 
   beforeEach(() => {
-    OriginalImage = global.Image;
+    OriginalImage = globalThis.Image;
   });
 
   afterEach(() => {
-    global.Image = OriginalImage;
+    globalThis.Image = OriginalImage;
   });
 
   it('rejects when image fails to load', async () => {
@@ -73,7 +73,7 @@ describe('compressImageToBase64', () => {
         setTimeout(() => this.onerror?.(), 0);
       }
     }
-    global.Image = MockImageError as unknown as typeof Image;
+    globalThis.Image = MockImageError as unknown as typeof Image;
 
     const file = new File(['not an image'], 'test.jpg', { type: 'image/jpeg' });
     await expect(compressImageToBase64(file)).rejects.toThrow('Failed to load image');
@@ -90,7 +90,7 @@ describe('compressImageToBase64', () => {
         setTimeout(() => this.onload?.(), 0);
       }
     }
-    global.Image = MockImageSuccess as unknown as typeof Image;
+    globalThis.Image = MockImageSuccess as unknown as typeof Image;
 
     const mockCanvas = {
       width: 0,
@@ -119,7 +119,7 @@ describe('compressImageToBase64', () => {
         setTimeout(() => this.onload?.(), 0);
       }
     }
-    global.Image = MockImageSuccess as unknown as typeof Image;
+    globalThis.Image = MockImageSuccess as unknown as typeof Image;
 
     const mockCanvas = {
       width: 0,
