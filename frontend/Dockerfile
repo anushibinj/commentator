@@ -11,17 +11,32 @@ COPY . .
 ARG VITE_API_BASE_URL=__VITE_API_BASE_URL__
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
+# Base (context) path for the app, baked in at build time
+ARG VITE_BASE_PATH=/
+ENV VITE_BASE_PATH=$VITE_BASE_PATH
+
 RUN npm run build
 
 # Stage 2: Serve
 FROM httpd:alpine
-COPY --from=build /app/dist /usr/local/apache2/htdocs/
-# Enable mod_rewrite and AllowOverride for SPA routing
+# Redeclare so it is available for COPY destination expansion and RUN substitution
+ARG VITE_BASE_PATH=/
+ENV VITE_BASE_PATH=${VITE_BASE_PATH}
+
+# Enable mod_rewrite, mod_deflate, mod_headers; allow .htaccess overrides
 RUN sed -i \
     -e 's|^#\(LoadModule rewrite_module\)|\1|' \
+    -e 's|^#\(LoadModule deflate_module\)|\1|' \
+    -e 's|^#\(LoadModule headers_module\)|\1|' \
     -e 's|AllowOverride None|AllowOverride All|g' \
     /usr/local/apache2/conf/httpd.conf
-COPY .htaccess /usr/local/apache2/htdocs/.htaccess
+
+COPY --from=build /app/dist /usr/local/apache2/htdocs${VITE_BASE_PATH}
+# Template .htaccess: substitute base-path placeholder baked at build time
+COPY .htaccess /tmp/.htaccess.tpl
+RUN sed "s|__VITE_BASE_PATH__|${VITE_BASE_PATH}|g" /tmp/.htaccess.tpl \
+    > "/usr/local/apache2/htdocs${VITE_BASE_PATH}/.htaccess"
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
