@@ -11,37 +11,39 @@ COPY . .
 ARG VITE_API_BASE_URL=__VITE_API_BASE_URL__
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
-# Base (context) path for the app, baked in at build time
-ARG VITE_BASE_PATH=/
+# Base path is always built as a sentinel so the published image is portable;
+# the real value is injected at container startup by the entrypoint.
+ARG VITE_BASE_PATH=__VITE_BASE_PATH__
 ENV VITE_BASE_PATH=$VITE_BASE_PATH
 
 RUN npm run build
 
 # Stage 2: Serve
 FROM httpd:alpine
-# Redeclare so it is available for COPY destination expansion and RUN substitution
-ARG VITE_BASE_PATH=/
-ENV VITE_BASE_PATH=${VITE_BASE_PATH}
 
-# Enable mod_rewrite, mod_deflate, mod_headers; allow .htaccess overrides
+# Enable mod_rewrite, mod_deflate, mod_headers, mod_alias; allow .htaccess overrides;
+# pre-create and include the runtime-generated base-path routing conf.
 RUN sed -i \
     -e 's|^#\(LoadModule rewrite_module\)|\1|' \
     -e 's|^#\(LoadModule deflate_module\)|\1|' \
     -e 's|^#\(LoadModule headers_module\)|\1|' \
+    -e 's|^#\(LoadModule alias_module\)|\1|' \
     -e 's|AllowOverride None|AllowOverride All|g' \
-    /usr/local/apache2/conf/httpd.conf
+    /usr/local/apache2/conf/httpd.conf && \
+    echo 'Include conf/extra/app-base.conf' >> /usr/local/apache2/conf/httpd.conf && \
+    touch /usr/local/apache2/conf/extra/app-base.conf
 
-COPY --from=build /app/dist /usr/local/apache2/htdocs${VITE_BASE_PATH}
-# Template .htaccess: substitute base-path placeholder baked at build time
-COPY .htaccess /tmp/.htaccess.tpl
-RUN sed "s|__VITE_BASE_PATH__|${VITE_BASE_PATH}|g" /tmp/.htaccess.tpl \
-    > "/usr/local/apache2/htdocs${VITE_BASE_PATH}/.htaccess"
+# Files always land in the document root; entrypoint handles routing for sub-paths.
+COPY --from=build /app/dist /usr/local/apache2/htdocs/
+# .htaccess keeps the __VITE_BASE_PATH__ sentinel; entrypoint substitutes at startup.
+COPY .htaccess /usr/local/apache2/htdocs/.htaccess
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Default value used when no env var is supplied at runtime
+# Defaults — override at runtime via compose/docker run environment variables.
 ENV VITE_API_BASE_URL=http://localhost:8080/api
+ENV VITE_BASE_PATH=/
 
 EXPOSE 80
 ENTRYPOINT ["/docker-entrypoint.sh"]
